@@ -1,0 +1,4 @@
+dist/
+docs/
+tmp/
+/**/node_modules
