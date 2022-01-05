@@ -1,8 +1,8 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.calculateFee = exports.GasPrice = void 0;
-var math_1 = require("@cosmjs/math");
-var proto_signing_1 = require("@cosmjs/proto-signing");
+const math_1 = require("@cosmjs/math");
+const proto_signing_1 = require("@cosmjs/proto-signing");
 /**
  * Denom checker for the Cosmos SDK 0.42 denom pattern
  * (https://github.com/cosmos/cosmos-sdk/blob/v0.42.4/types/coin.go#L599-L601).
@@ -20,8 +20,8 @@ function checkDenom(denom) {
  *
  * This is the same as GasPrice from @cosmjs/launchpad but those might diverge in the future.
  */
-var GasPrice = /** @class */ (function () {
-    function GasPrice(amount, denom) {
+class GasPrice {
+    constructor(amount, denom) {
         this.amount = amount;
         this.denom = denom;
     }
@@ -33,28 +33,28 @@ var GasPrice = /** @class */ (function () {
      *
      * Separators are not yet supported.
      */
-    GasPrice.fromString = function (gasPrice) {
+    static fromString(gasPrice) {
         // Use Decimal.fromUserInput and checkDenom for detailed checks and helpful error messages
-        var matchResult = gasPrice.match(/^([0-9.]+)([a-z][a-z0-9]*)$/i);
+        const matchResult = gasPrice.match(/^([0-9.]+)([a-z][a-z0-9]*)$/i);
         if (!matchResult) {
             throw new Error("Invalid gas price string");
         }
-        var _ = matchResult[0], amount = matchResult[1], denom = matchResult[2];
+        const [_, amount, denom] = matchResult;
         checkDenom(denom);
-        var fractionalDigits = 18;
-        var decimalAmount = math_1.Decimal.fromUserInput(amount, fractionalDigits);
+        const fractionalDigits = 18;
+        const decimalAmount = math_1.Decimal.fromUserInput(amount, fractionalDigits);
         return new GasPrice(decimalAmount, denom);
-    };
-    return GasPrice;
-}());
+    }
+}
 exports.GasPrice = GasPrice;
 function calculateFee(gasLimit, gasPrice) {
-    var processedGasPrice = typeof gasPrice === "string" ? GasPrice.fromString(gasPrice) : gasPrice;
-    var denom = processedGasPrice.denom, gasPriceAmount = processedGasPrice.amount;
-    var amount = Math.ceil(gasPriceAmount.multiply(new math_1.Uint53(gasLimit)).toFloatApproximation());
+    const processedGasPrice = typeof gasPrice === "string" ? GasPrice.fromString(gasPrice) : gasPrice;
+    const { denom, amount: gasPriceAmount } = processedGasPrice;
+    const amount = Math.ceil(gasPriceAmount.multiply(new math_1.Uint53(gasLimit)).toFloatApproximation());
     return {
         amount: (0, proto_signing_1.coins)(amount, denom),
-        gas: gasLimit.toString()
+        gas: gasLimit.toString(),
     };
 }
 exports.calculateFee = calculateFee;
+//# sourceMappingURL=fee.js.map

@@ -1,73 +1,68 @@
 "use strict";
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.makeMultisignedTx = exports.makeCompactBitArray = void 0;
-var amino_1 = require("@cosmjs/amino");
-var encoding_1 = require("@cosmjs/encoding");
-var proto_signing_1 = require("@cosmjs/proto-signing");
-var multisig_1 = require("cosmjs-types/cosmos/crypto/multisig/v1beta1/multisig");
-var signing_1 = require("cosmjs-types/cosmos/tx/signing/v1beta1/signing");
-var tx_1 = require("cosmjs-types/cosmos/tx/v1beta1/tx");
-var tx_2 = require("cosmjs-types/cosmos/tx/v1beta1/tx");
-var long_1 = require("long");
+const amino_1 = require("@cosmjs/amino");
+const encoding_1 = require("@cosmjs/encoding");
+const proto_signing_1 = require("@cosmjs/proto-signing");
+const multisig_1 = require("cosmjs-types/cosmos/crypto/multisig/v1beta1/multisig");
+const signing_1 = require("cosmjs-types/cosmos/tx/signing/v1beta1/signing");
+const tx_1 = require("cosmjs-types/cosmos/tx/v1beta1/tx");
+const tx_2 = require("cosmjs-types/cosmos/tx/v1beta1/tx");
+const long_1 = __importDefault(require("long"));
 function makeCompactBitArray(bits) {
-    var byteCount = Math.ceil(bits.length / 8);
-    var extraBits = bits.length - Math.floor(bits.length / 8) * 8;
-    var bytes = new Uint8Array(byteCount); // zero-filled
-    bits.forEach(function (value, index) {
-        var bytePos = Math.floor(index / 8);
-        var bitPos = index % 8;
+    const byteCount = Math.ceil(bits.length / 8);
+    const extraBits = bits.length - Math.floor(bits.length / 8) * 8;
+    const bytes = new Uint8Array(byteCount); // zero-filled
+    bits.forEach((value, index) => {
+        const bytePos = Math.floor(index / 8);
+        const bitPos = index % 8;
         // eslint-disable-next-line no-bitwise
         if (value)
-            bytes[bytePos] |= 1 << (8 - 1 - bitPos);
+            bytes[bytePos] |= 0b1 << (8 - 1 - bitPos);
     });
     return multisig_1.CompactBitArray.fromPartial({ elems: bytes, extraBitsStored: extraBits });
 }
 exports.makeCompactBitArray = makeCompactBitArray;
 function makeMultisignedTx(multisigPubkey, sequence, fee, bodyBytes, signatures) {
-    var addresses = Array.from(signatures.keys());
-    var prefix = encoding_1.Bech32.decode(addresses[0]).prefix;
-    var signers = Array(multisigPubkey.value.pubkeys.length).fill(false);
-    var signaturesList = new Array();
-    for (var i = 0; i < multisigPubkey.value.pubkeys.length; i++) {
-        var signerAddress = (0, amino_1.pubkeyToAddress)(multisigPubkey.value.pubkeys[i], prefix);
-        var signature = signatures.get(signerAddress);
+    const addresses = Array.from(signatures.keys());
+    const prefix = encoding_1.Bech32.decode(addresses[0]).prefix;
+    const signers = Array(multisigPubkey.value.pubkeys.length).fill(false);
+    const signaturesList = new Array();
+    for (let i = 0; i < multisigPubkey.value.pubkeys.length; i++) {
+        const signerAddress = (0, amino_1.pubkeyToAddress)(multisigPubkey.value.pubkeys[i], prefix);
+        const signature = signatures.get(signerAddress);
         if (signature) {
             signers[i] = true;
             signaturesList.push(signature);
         }
     }
-    var signerInfo = {
+    const signerInfo = {
         publicKey: (0, proto_signing_1.encodePubkey)(multisigPubkey),
         modeInfo: {
             multi: {
                 bitarray: makeCompactBitArray(signers),
-                modeInfos: signaturesList.map(function (_) { return ({ single: { mode: signing_1.SignMode.SIGN_MODE_LEGACY_AMINO_JSON } }); })
-            }
+                modeInfos: signaturesList.map((_) => ({ single: { mode: signing_1.SignMode.SIGN_MODE_LEGACY_AMINO_JSON } })),
+            },
         },
-        sequence: long_1["default"].fromNumber(sequence)
+        sequence: long_1.default.fromNumber(sequence),
     };
-    var authInfo = tx_1.AuthInfo.fromPartial({
+    const authInfo = tx_1.AuthInfo.fromPartial({
         signerInfos: [signerInfo],
         fee: {
-            amount: __spreadArray([], fee.amount, true),
-            gasLimit: long_1["default"].fromString(fee.gas)
-        }
+            amount: [...fee.amount],
+            gasLimit: long_1.default.fromString(fee.gas),
+        },
     });
-    var authInfoBytes = tx_1.AuthInfo.encode(authInfo).finish();
-    var signedTx = tx_2.TxRaw.fromPartial({
+    const authInfoBytes = tx_1.AuthInfo.encode(authInfo).finish();
+    const signedTx = tx_2.TxRaw.fromPartial({
         bodyBytes: bodyBytes,
         authInfoBytes: authInfoBytes,
-        signatures: [multisig_1.MultiSignature.encode(multisig_1.MultiSignature.fromPartial({ signatures: signaturesList })).finish()]
+        signatures: [multisig_1.MultiSignature.encode(multisig_1.MultiSignature.fromPartial({ signatures: signaturesList })).finish()],
     });
     return signedTx;
 }
 exports.makeMultisignedTx = makeMultisignedTx;
+//# sourceMappingURL=multisignature.js.map

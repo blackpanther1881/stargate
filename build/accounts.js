@@ -1,22 +1,22 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.accountFromAny = void 0;
-var math_1 = require("@cosmjs/math");
-var proto_signing_1 = require("@cosmjs/proto-signing");
-var utils_1 = require("@cosmjs/utils");
-var auth_1 = require("cosmjs-types/cosmos/auth/v1beta1/auth");
-var vesting_1 = require("cosmjs-types/cosmos/vesting/v1beta1/vesting");
+const math_1 = require("@cosmjs/math");
+const proto_signing_1 = require("@cosmjs/proto-signing");
+const utils_1 = require("@cosmjs/utils");
+const auth_1 = require("cosmjs-types/cosmos/auth/v1beta1/auth");
+const vesting_1 = require("cosmjs-types/cosmos/vesting/v1beta1/vesting");
 function uint64FromProto(input) {
     return math_1.Uint64.fromString(input.toString());
 }
 function accountFromBaseAccount(input) {
-    var address = input.address, pubKey = input.pubKey, accountNumber = input.accountNumber, sequence = input.sequence;
-    var pubkey = (0, proto_signing_1.decodePubkey)(pubKey);
+    const { address, pubKey, accountNumber, sequence } = input;
+    const pubkey = (0, proto_signing_1.decodePubkey)(pubKey);
     return {
         address: address,
         pubkey: pubkey,
         accountNumber: uint64FromProto(accountNumber).toNumber(),
-        sequence: uint64FromProto(sequence).toNumber()
+        sequence: uint64FromProto(sequence).toNumber(),
     };
 }
 /**
@@ -27,39 +27,40 @@ function accountFromBaseAccount(input) {
  */
 function accountFromAny(input) {
     var _a, _b, _c, _d, _e, _f, _g;
-    var typeUrl = input.typeUrl, value = input.value;
+    const { typeUrl, value } = input;
     switch (typeUrl) {
         // auth
         case "/cosmos.auth.v1beta1.BaseAccount":
             return accountFromBaseAccount(auth_1.BaseAccount.decode(value));
         case "/cosmos.auth.v1beta1.ModuleAccount": {
-            var baseAccount = auth_1.ModuleAccount.decode(value).baseAccount;
+            const baseAccount = auth_1.ModuleAccount.decode(value).baseAccount;
             (0, utils_1.assert)(baseAccount);
             return accountFromBaseAccount(baseAccount);
         }
         // vesting
         case "/cosmos.vesting.v1beta1.BaseVestingAccount": {
-            var baseAccount = (_a = vesting_1.BaseVestingAccount.decode(value)) === null || _a === void 0 ? void 0 : _a.baseAccount;
+            const baseAccount = (_a = vesting_1.BaseVestingAccount.decode(value)) === null || _a === void 0 ? void 0 : _a.baseAccount;
             (0, utils_1.assert)(baseAccount);
             return accountFromBaseAccount(baseAccount);
         }
         case "/cosmos.vesting.v1beta1.ContinuousVestingAccount": {
-            var baseAccount = (_c = (_b = vesting_1.ContinuousVestingAccount.decode(value)) === null || _b === void 0 ? void 0 : _b.baseVestingAccount) === null || _c === void 0 ? void 0 : _c.baseAccount;
+            const baseAccount = (_c = (_b = vesting_1.ContinuousVestingAccount.decode(value)) === null || _b === void 0 ? void 0 : _b.baseVestingAccount) === null || _c === void 0 ? void 0 : _c.baseAccount;
             (0, utils_1.assert)(baseAccount);
             return accountFromBaseAccount(baseAccount);
         }
         case "/cosmos.vesting.v1beta1.DelayedVestingAccount": {
-            var baseAccount = (_e = (_d = vesting_1.DelayedVestingAccount.decode(value)) === null || _d === void 0 ? void 0 : _d.baseVestingAccount) === null || _e === void 0 ? void 0 : _e.baseAccount;
+            const baseAccount = (_e = (_d = vesting_1.DelayedVestingAccount.decode(value)) === null || _d === void 0 ? void 0 : _d.baseVestingAccount) === null || _e === void 0 ? void 0 : _e.baseAccount;
             (0, utils_1.assert)(baseAccount);
             return accountFromBaseAccount(baseAccount);
         }
         case "/cosmos.vesting.v1beta1.PeriodicVestingAccount": {
-            var baseAccount = (_g = (_f = vesting_1.PeriodicVestingAccount.decode(value)) === null || _f === void 0 ? void 0 : _f.baseVestingAccount) === null || _g === void 0 ? void 0 : _g.baseAccount;
+            const baseAccount = (_g = (_f = vesting_1.PeriodicVestingAccount.decode(value)) === null || _f === void 0 ? void 0 : _f.baseVestingAccount) === null || _g === void 0 ? void 0 : _g.baseAccount;
             (0, utils_1.assert)(baseAccount);
             return accountFromBaseAccount(baseAccount);
         }
         default:
-            throw new Error("Unsupported type: '" + typeUrl + "'");
+            throw new Error(`Unsupported type: '${typeUrl}'`);
     }
 }
 exports.accountFromAny = accountFromAny;
+//# sourceMappingURL=accounts.js.map

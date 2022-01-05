@@ -1,5 +1,5 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.isMsgVoteEncodeObject = exports.isMsgSubmitProposalEncodeObject = exports.isMsgDepositEncodeObject = exports.isMsgTransferEncodeObject = exports.isMsgWithdrawDelegatorRewardEncodeObject = exports.isMsgUndelegateEncodeObject = exports.isMsgDelegateEncodeObject = exports.isMsgSendEncodeObject = void 0;
 function isMsgSendEncodeObject(encodeObject) {
     return encodeObject.typeUrl === "/cosmos.bank.v1beta1.MsgSend";
@@ -34,3 +34,4 @@ function isMsgVoteEncodeObject(encodeObject) {
     return encodeObject.typeUrl === "/cosmos.gov.v1beta1.MsgVote";
 }
 exports.isMsgVoteEncodeObject = isMsgVoteEncodeObject;
+//# sourceMappingURL=encodeobjects.js.map

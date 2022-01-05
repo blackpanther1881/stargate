@@ -1,5 +1,5 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.isAminoMsgTransfer = exports.isAminoMsgUndelegate = exports.isAminoMsgBeginRedelegate = exports.isAminoMsgDelegate = exports.isAminoMsgEditValidator = exports.isAminoMsgCreateValidator = exports.isAminoMsgUnjail = exports.isAminoMsgDeposit = exports.isAminoMsgVote = exports.isAminoMsgSubmitProposal = exports.isAminoMsgSubmitEvidence = exports.isAminoMsgFundCommunityPool = exports.isAminoMsgWithdrawValidatorCommission = exports.isAminoMsgWithdrawDelegatorReward = exports.isAminoMsgSetWithdrawAddress = exports.isAminoMsgVerifyInvariant = exports.isAminoMsgMultiSend = exports.isAminoMsgSend = void 0;
 function isAminoMsgSend(msg) {
     return msg.type === "cosmos-sdk/MsgSend";
@@ -75,3 +75,4 @@ function isAminoMsgTransfer(msg) {
     return msg.type === "cosmos-sdk/MsgTransfer";
 }
 exports.isAminoMsgTransfer = isAminoMsgTransfer;
+//# sourceMappingURL=aminomsgs.js.map
